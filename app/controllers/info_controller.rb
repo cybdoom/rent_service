@@ -1,15 +1,10 @@
 class InfoController < ApplicationController
 
   def show
-    @address = parse_address
+    @address = Address.new params.permit(:address)[:address]
 
-    render json: @address.info.to_json
-  end
-
-  private
-
-  def parse_address
-    Address.new params.require(:address).permit(:city, :street_type, :street_name, :building)
+    puts @address.info
+    render json: @address.info
   end
 
 end
