@@ -5,6 +5,7 @@ module GoogleMapsApiClient
 
   GOOGLE_MAPS_API_ENDPOINT = 'https://maps.googleapis.com/maps/api'
   STATIC_MAP_SIZE = '600x600'
+  RADIUS = 3
 
   def get_coordinates
     url = "#{GOOGLE_MAPS_API_ENDPOINT}/geocode/json?key=#{app_key}&#{self.to_params}"
@@ -59,6 +60,14 @@ module GoogleMapsApiClient
       location: place,
       distance: min.to_s
     }
+  end
+
+  def metros_in_radius(points)
+    in_radius = {}
+    metros(points).each do |place, distance|
+      in_radius[place] = distance if distance.to_f < RADIUS
+    end
+    in_radius
   end
 
 end
