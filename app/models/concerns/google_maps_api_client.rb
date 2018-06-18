@@ -22,7 +22,7 @@ module GoogleMapsApiClient
   def directions(places)
     result = {}
     places.each do |place|
-      url = "#{GOOGLE_MAPS_API_ENDPOINT}/directions/json?key=#{app_key}&origin=#{Address.to_url_param(@full_name)}&destination=#{place}"
+      url = "#{GOOGLE_MAPS_API_ENDPOINT}/directions/json?key=#{app_key}&origin=#{Address.to_url_param(@full_name)}&mode=walking&destination=#{place}"
       response = JSON.parse(RestClient.get url)
       result[place] = begin
         response['routes'].first['legs'].first['distance']['text'].split(' ').first
@@ -32,6 +32,33 @@ module GoogleMapsApiClient
     end
 
     result
+  end
+
+  def metros(points)
+    return @metros if @metros.present?
+
+    @metros = {}
+    points.each do |point|
+      url = "#{GOOGLE_MAPS_API_ENDPOINT}/directions/json?key=#{app_key}&origin=#{Address.to_url_param(@full_name)}&mode=walking&destination=#{point}"
+      response = JSON.parse(RestClient.get url)
+      @metros[point] = response['routes'].first['legs'].first['distance']['text'].split(' ').first
+    end
+    @metros
+  end
+
+  def closest_metro(points)
+    min = metros(points).first.last.to_f
+    place = metros(points).first.first
+
+    metros(points).each do |key, value|
+      place = key
+      min = value.to_f if value.to_f < min
+    end
+
+    {
+      location: place,
+      distance: min.to_s
+    }
   end
 
 end
