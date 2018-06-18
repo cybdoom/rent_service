@@ -4,7 +4,7 @@ module GoogleMapsApiClient
   extend ActiveSupport::Concern
 
   GOOGLE_MAPS_API_ENDPOINT = 'https://maps.googleapis.com/maps/api'
-  STATIC_MAP_SIZE = '600x1200'
+  STATIC_MAP_SIZE = '600x600'
 
   def get_coordinates
     url = "#{GOOGLE_MAPS_API_ENDPOINT}/geocode/json?key=#{app_key}&#{self.to_params}"
@@ -22,10 +22,10 @@ module GoogleMapsApiClient
   def directions(places)
     result = {}
     places.each do |place|
-      url = "#{GOOGLE_MAPS_API_ENDPOINT}/directions/json?key=#{app_key}&origin=#{Address.to_url_param(@full_name)}&mode=walking&destination=#{place}"
+      url = "#{GOOGLE_MAPS_API_ENDPOINT}/directions/json?key=#{app_key}&origin=#{Address.to_url_param(@full_name)}&destination=#{place}"
       response = JSON.parse(RestClient.get url)
       result[place] = begin
-        response['routes'].first['legs'].first['distance']['text']
+        response['routes'].first['legs'].first['distance']['text'].split(' ').first
       rescue
         nil
       end
