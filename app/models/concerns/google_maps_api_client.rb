@@ -26,7 +26,8 @@ module GoogleMapsApiClient
       response = JSON.parse(RestClient.get url)
       result[place] = begin
         response['routes'].first['legs'].first['distance']['text']
-      rescue nil
+      rescue
+        nil
       end
     end
 
