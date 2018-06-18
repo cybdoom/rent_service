@@ -4,7 +4,7 @@ module GoogleMapsApiClient
   extend ActiveSupport::Concern
 
   GOOGLE_MAPS_API_ENDPOINT = 'https://maps.googleapis.com/maps/api'
-  STATIC_MAP_SIZE = '400x400'
+  STATIC_MAP_SIZE = '600x1200'
 
   def get_coordinates
     url = "#{GOOGLE_MAPS_API_ENDPOINT}/geocode/json?key=#{app_key}&#{self.to_params}"
