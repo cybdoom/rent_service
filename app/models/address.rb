@@ -30,12 +30,14 @@ class Address
     @coordinates ||= get_coordinates
 
     @info = {
-      location_map:     location_map_url,
-      coordinates:      @coordinates,
-      directions:       directions(PLACES),
-      metros:           metros(::METROS),
-      closest_metro:    closest_metro(::METROS),
-      metros_in_radius: metros_in_radius(::METROS)
+      location_map:           location_map_url,
+      location_map_zoom:      location_map_zoom_url,
+      location_map_satellite: location_map_satellite_url,
+      coordinates:            @coordinates,
+      directions:             directions(PLACES),
+      metros:                 metros(::METROS),
+      closest_metro:          closest_metro(::METROS),
+      metros_in_radius:       metros_in_radius(::METROS)
     }
   end
 

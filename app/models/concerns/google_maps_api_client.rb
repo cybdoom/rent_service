@@ -16,6 +16,14 @@ module GoogleMapsApiClient
     "#{GOOGLE_MAPS_API_ENDPOINT}/staticmap?key=#{app_key}&#{{center: @full_name}.to_query}&size=#{STATIC_MAP_SIZE}&zoom=15&markers=size:mid%7C#{Address.to_url_param(@full_name)}"
   end
 
+  def location_map_zoom_url
+    location_map_url.gsub('zoom=15', 'zoom=18')
+  end
+
+  def location_map_satellite_url
+    location_map_url + '&maptype=satellite'
+  end
+
   def app_key
     'AIzaSyCLyopNQLnHRYPFx9RlE55xdtNiRRTmHME'
   end
