@@ -35,9 +35,9 @@ class Address
       location_map_satellite: location_map_satellite_url,
       coordinates:            @coordinates,
       directions:             directions(PLACES),
-      metros:                 metros(::METROS),
-      closest_metro:          closest_metro(::METROS),
-      metros_in_radius:       metros_in_radius(::METROS)
+      metros:                 metros,
+      closest_metro:          closest_metro,
+      metros_in_radius:       metros_in_radius
     }
   end
 

@@ -5,7 +5,7 @@ module GoogleMapsApiClient
 
   GOOGLE_MAPS_API_ENDPOINT = 'https://maps.googleapis.com/maps/api'
   STATIC_MAP_SIZE = '600x600'
-  RADIUS = 3
+  RADIUS = 2
 
   def get_coordinates
     url = "#{GOOGLE_MAPS_API_ENDPOINT}/geocode/json?key=#{app_key}&#{self.to_params}"
@@ -43,39 +43,61 @@ module GoogleMapsApiClient
     result
   end
 
-  def metros(points)
+  def metros
     return @metros if @metros.present?
 
     @metros = {}
-    points.each do |point|
-      url = "#{GOOGLE_MAPS_API_ENDPOINT}/directions/json?key=#{app_key}&origin=#{Address.to_url_param(@full_name)}&mode=walking&destination=#{point}"
+    ::METROS.each do |metro|
+      url = "#{GOOGLE_MAPS_API_ENDPOINT}/directions/json?key=#{app_key}&origin=#{Address.to_url_param(@full_name)}&mode=walking&destination=#{metro[:coordinates]}"
       response = JSON.parse(RestClient.get url)
-      @metros[point] = response['routes'].first['legs'].first['distance']['text'].split(' ').first
+      @metros[metro[:name]] = response['routes'].first['legs'].first['distance']['text'].split(' ').first
     end
     @metros
   end
 
-  def closest_metro(points)
-    min = metros(points).first.last.to_f
-    place = metros(points).first.first
+  def closest_metro
+    name = metros.keys.first
+    min = metros[name].to_f
 
-    metros(points).each do |key, value|
-      place = key
-      min = value.to_f if value.to_f < min
+    metros.each do |key, value|
+      if value.to_f < min
+        name = key
+        min = value.to_f
+      end
     end
 
     {
-      location: place,
+      name: name,
       distance: min.to_s
     }
   end
 
-  def metros_in_radius(points)
-    in_radius = {}
-    metros(points).each do |place, distance|
-      in_radius[place] = distance if distance.to_f < RADIUS
+  def metros_in_radius
+    in_radius = []
+    ::METROS.each do |metro|
+      d = distance("#{@coordinates['lat']},#{@coordinates['lng']}", metro[:coordinates])
+      in_radius << metro[:name] if d <= RADIUS
     end
     in_radius
+  end
+
+  def distance(point1, point2)
+    loc1 = point1.split(',').map &:to_f
+    loc2 = point2.split(',').map &:to_f
+    rad_per_deg = Math::PI/180  # PI / 180
+    rkm = 6371                  # Earth radius in kilometers
+    rm = rkm * 1000             # Radius in meters
+
+    dlat_rad = (loc2[0]-loc1[0]) * rad_per_deg  # Delta, converted to rad
+    dlon_rad = (loc2[1]-loc1[1]) * rad_per_deg
+
+    lat1_rad, lon1_rad = loc1.map {|i| i * rad_per_deg }
+    lat2_rad, lon2_rad = loc2.map {|i| i * rad_per_deg }
+
+    a = Math.sin(dlat_rad/2)**2 + Math.cos(lat1_rad) * Math.cos(lat2_rad) * Math.sin(dlon_rad/2)**2
+    c = 2 * Math::atan2(Math::sqrt(a), Math::sqrt(1-a))
+
+    (rm * c).to_f / 1000 # Delta in meters
   end
 
 end
