@@ -25,7 +25,7 @@ module GoogleMapsApiClient
   end
 
   def app_key
-    'AIzaSyDT17duKrq7z53D6ii9Dq2F3KaLDeweYgY'
+    'AIzaSyCy2nPExSrD9fy7bHSwdr-Qbss4WU-fs_8'
   end
 
   def directions(places)
